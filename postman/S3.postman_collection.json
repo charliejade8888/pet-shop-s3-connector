@@ -1,0 +1,59 @@
+{
+	"info": {
+		"_postman_id": "8af40bd4-8d67-459d-a045-092288afeca5",
+		"name": "S3",
+		"description": "Click on the link returned and change method to PUT.\n\nFor localstack add the full path including the bucket name to the fileName parameter e.g.\n\n`?fileName=bucket/myfile.bla`\n\nFor a the real S3 just pass the file name e.g.\n\n`?fileName=myfile.bla`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8442851"
+	},
+	"item": [
+		{
+			"name": "get presigned put url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8080/api/v1/todo/getPresignedPutUrl",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"todo",
+						"getPresignedPutUrl"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get presigned get url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8080/api/v1/todo/getPresignedUrl",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"todo",
+						"getPresignedUrl"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
