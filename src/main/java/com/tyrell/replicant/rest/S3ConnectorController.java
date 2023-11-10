@@ -46,7 +46,7 @@ public class S3ConnectorController {
     public String generatePresignedGetUrl(String fileName) {
         String objectKey = fileName;
         String bucketProp = env.getProperty("BUCKET_NAME");
-        String bucketName = bucketProp == null ? "" : bucketProp;
+        String bucketName = bucketProp == null ? "donkeykong8888" : bucketProp;
         System.err.println("BUCKET_NAME::"+ bucketName);
         try {
             // Set the presigned URL to expire after 10 mins.
@@ -77,8 +77,8 @@ public class S3ConnectorController {
     }
 
     public String generatePresignedPutUrl(String fileName) {
-        String bucketProp = env.getProperty("BUCKET_NAME");
-        String bucketName = bucketProp == null ? "" : bucketProp;
+        String bucketProp = env.getProperty("BUCKET_NAME"); // TODO BS use config.aws.s3.bucket-name when sw to proper propd shndling
+        String bucketName = bucketProp == null ? "donkeykong8888" : bucketProp;
         System.err.println("BUCKET_NAME::"+ bucketName);
         try {
             // Set the pre-signed URL to expire after 10 mins.

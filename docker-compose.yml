@@ -7,5 +7,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     environment:
-      - BUCKET_NAME=bucket
+      - BUCKET_NAME=$BUCKET_NAME
+      - ACCESS_KEY_ID=$ACCESS_KEY_ID
+      - SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY
     network_mode: host

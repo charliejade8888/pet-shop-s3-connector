@@ -6,11 +6,13 @@ services:
       dockerfile: Dockerfile.test
     ports:
       - "127.0.0.1:8080:8080"
-# bucket name is not set here as localstack malforms the url with pre-signed links
-# instead the bucket name is passed into the fileName parameter
-# see postman collection for examples
-#    environment:
-#      - BUCKET_NAME=bucket
+    # bucket name is not set here as localstack malforms the url with pre-signed links
+    # instead the bucket name is passed into the fileName parameter
+    # see postman collection for examples
+    environment:
+#      - BUCKET_NAME=$BUCKET_NAME
+      - ACCESS_KEY_ID=$ACCESS_KEY_ID
+      - SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY
     network_mode: host
   localstack:
     image: localstack/localstack

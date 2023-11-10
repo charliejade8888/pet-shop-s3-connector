@@ -18,10 +18,12 @@ public class AmazonConfig {
         // TODO BS - pass env var to application.yml - google how to do this
         AWSCredentials awsCredentials =
                 new BasicAWSCredentials("localstack", "localstack");
+
         return AmazonS3ClientBuilder
                 .standard()
-//                .withRegion("us-east-1")
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4566", "us-east-1"))
+//                .withRegion("us-east-1") // TODO BS
+//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4566", "us-east-1"))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://s3.us-east-1.amazonaws.com", "us-east-1"))
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
 
