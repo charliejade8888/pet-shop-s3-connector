@@ -22,8 +22,8 @@ public class AmazonConfig {
         return AmazonS3ClientBuilder
                 .standard()
 //                .withRegion("us-east-1") // TODO BS
-//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4566", "us-east-1"))
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://s3.us-east-1.amazonaws.com", "us-east-1"))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4566", "us-east-1"))
+//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://s3.us-east-1.amazonaws.com", "us-east-1"))
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
 

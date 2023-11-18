@@ -1,0 +1,48 @@
+#spring
+spring:
+  application:
+    name: pet-shop-s3-connector
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  #https://www.baeldung.com/spring-boot-data-sql-and-schema-sql
+    defer-datasource-initialization: true
+  h2:
+    console:
+      enabled: true
+  datasource:
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+    #in memory db only viewbable via console see - https://stackoverflow.com/questions/52388984/how-to-access-in-memory-h2-database-from-intellij-idea
+    #use this as url
+    url: jdbc:h2:mem:testdb
+    #console available here - http://localhost:8080/h2-console/
+
+#https://springhow.com/spring-boot-banner-generator/
+
+#server:
+#  port: 13000
+
+#No auth protected
+endpoints.shutdown.sensitive: false
+
+#Enable shutdown endpoint
+management:
+  endpoint:
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info, health, shutdown, mappings #or * :: chcek these at localhost:9000/actuator/health etc
+
+shutdown.url: http://localhost:13000/actuator/shutdown
+
+#other
+yaml:
+  auth-method: yoyoyo
+
+#logging
+logging:
+  level:
+    root: ERROR
