@@ -8,6 +8,16 @@ plugins {
 group = 'com.tyrell'
 version = '0.0.1-SNAPSHOT'
 
+project.ext {
+	cucumberVersion = '1.2.5'
+//	junitVersion = '4.12'
+//	springBootVersion = '2.0.2.RELEASE'
+	restAssuredVersion = '2.9.0'
+	jsonVersion = '20180130'
+//	swaggerVersion = '2.0.2'
+//	mockServerVersion = '3.10.4'
+}
+
 java {
 	sourceCompatibility = '17'
 }
@@ -33,11 +43,74 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 	testImplementation 'org.testcontainers:junit-jupiter'
+
+
+//	testImplementation("org.junit.jupiter:junit-jupiter-engine")
+//	testImplementation("org.testcontainers:testcontainers:1.17.5")
+	testImplementation("org.testcontainers:junit-jupiter:1.17.5")
+//	testImplementation("org.testcontainers:mariadb:1.17.5")
+//	testImplementation("org.testcontainers:r2dbc:1.17.5")
+	testImplementation("org.freemarker:freemarker:2.3.31")
+
+	testImplementation("io.projectreactor:reactor-test")
+//	testImplementation("org.junit.vintage:junit-vintage-engine:5.9.0")
+
+	testImplementation("io.cucumber:cucumber-java:7.9.0")
+	testImplementation("io.cucumber:cucumber-spring:7.9.0")
+	testImplementation("io.cucumber:cucumber-junit:7.9.0")
+	testImplementation("io.rest-assured:rest-assured")
+	testImplementation("io.rest-assured:json-path")
+	testImplementation("io.rest-assured:xml-path")
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+//tasks.named('test') {
+//	useJUnitPlatform()
+//}
+
+sourceSets {
+	test {
+		java {
+			srcDirs 'src/component-test'
+			srcDirs 'src/component-test/java'
+			srcDirs 'src/test'
+		}
+	}
+	main {
+		java {
+			srcDirs 'src/main'
+		}
+	}
 }
+
+tasks.withType(Test) {
+	scanForTestClasses = false
+	include "**/*Test.class"
+}
+
+//Dynamic exclude through property defined in the build.gradle file
+//to run cucumber test use ./gradlew build -Pcomponent-test
+test {
+	if (project.hasProperty('component-test')) {
+		include "**/RunATDDTest.class"
+		exclude "**/*Test.class"
+	}
+}
+
+task ut(type: Exec) {
+	commandLine './ut.sh'
+}
+
+//componentTest = task<Test>("component-test") {
+//	description = "Runs the component test, use -d or -i flag to see output."
+//	group = "verification"
+//	testClassesDirs = sourceSets["component-test"].output.classesDirs
+//	classpath = sourceSets["component-test"].runtimeClasspath
+//	useJUnitPlatform()
+//	dependsOn("assemble")
+//}
+
+
