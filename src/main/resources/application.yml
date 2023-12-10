@@ -45,4 +45,5 @@ yaml:
 #logging
 logging:
   level:
-    root: ERROR
+    root: INFO
+    #ERROR

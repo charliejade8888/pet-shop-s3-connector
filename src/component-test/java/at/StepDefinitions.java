@@ -1,12 +1,37 @@
 package at;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
+import java.io.StringWriter;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import org.json.JSONException;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static java.math.BigInteger.ZERO;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = {CucumberTestConfig.class})
 @ActiveProfiles("test")
@@ -14,7 +39,8 @@ public class StepDefinitions {
 
     @Given("^the following daily data is available for bitcoin yesterday:$")
     public void the_following_daily_data_is_available_for_bitcoin_yesterday(DataTable dataTable) throws IOException, InterruptedException {
-
+        var var = 0;
+//        val ?? not in java, use final var
     }
 
     @When("^I make a request for daily data \"([^\"]*)\" from \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -24,6 +50,110 @@ public class StepDefinitions {
     @Then("^the following data should be returned:$")
     public void the_following_data_should_be_returned(DataTable dataTable) throws Throwable {
 
+    }
+
+    // TODO don't need an inner static class???
+    public static final class Companion {
+
+        private static boolean containerStarted;
+
+        private static String client_id = "some_client_id" ; // petshopapi
+        private static String client_secret = "some_client_secret"; // 7riSklHZfjhmEGrDFakimD2heGOBImCs
+        private static String authPath = "http://localhost:8180/realms/petshoprealm/protocol/openid-connect/token";
+
+        private String getToken() {
+             Response tokenResponse =
+                    RestAssured.given()
+                            .contentType("application/x-www-form-urlencoded")
+                            .formParam("grant_type", "client_credentials")
+                            .formParam("client_id", client_id)
+                            .formParam("client_secret", client_secret)
+                            .post(authPath);
+            assertThat(tokenResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+            return new JSONObject(tokenResponse.body().asString()).getString("access_token");
+        }
+
+        // TODO what is <?>
+        private static final DockerComposeContainer<?> dockerComposeContainer =
+                new DockerComposeContainer(new File("docker-compose-component-test.yml"))
+                .waitingFor("pet-shop-catalog", new HostPortWaitStrategy()); // TODO need to rename for this service
+
+        @Before
+        private static void beforeAll() {
+            if (!containerStarted) {
+                dockerComposeContainer.withLocalCompose(true); // version in testcontainers library v 1.17.5 buggy
+                dockerComposeContainer.start();
+                containerStarted = true;
+//                Thread.sleep(20000) // workaround for ARM64
+            }
+            dockerComposeContainer.withRemoveImages(DockerComposeContainer.RemoveImages.ALL);
+        }
+
+        public static JSONArray convertDataTableToJSONArray(DataTable dataTable, String... columnsToIgnore) throws JSONException {
+            List<List<String>> table = dataTable.asLists();
+            JSONArray jsonArray = new JSONArray();
+            boolean headerRow = true;
+            List<String> keys = table.get(ZERO.intValue());
+            for (List<String> row : table) {
+                jsonArray = (headerRow) ?  jsonArray : jsonArray.put(convertRowToJSONObject(keys, row, columnsToIgnore));
+                headerRow=false;
+            }
+            return jsonArray;
+        }
+
+        private static JSONObject convertRowToJSONObject(List<String> keys, List<String> row, String... columnsToIgnore) throws JSONException {
+            JSONObject jsonObject = new JSONObject();
+            int columnCounter = 0;
+            for (String column : row) {
+                jsonObject.put(keys.get(columnCounter), column);
+                columnCounter++;
+            }
+            for(String column : columnsToIgnore) {
+                jsonObject.remove(column);
+            }
+            return jsonObject;
+        }
+
+        private String createRequestFromDataTable(DataTable dataTable, String templateFile) throws IOException, TemplateException {
+            String response;
+            Configuration cfg = new Configuration(new Version("2.3.23"));
+            cfg.setClassForTemplateLoading(this.getClass(), "/");
+            cfg.setEncoding(Locale.getDefault(), "UTF-8");
+            var template = cfg.getTemplate(templateFile);
+            try (StringWriter out = new StringWriter()) {
+                template.process(dataTable.asMaps().get(0), out);
+                response = out.getBuffer().toString();
+                out.flush();
+            }// TODO see linux tools too
+            return response;
+        }
+
+//        private static String createExpectation(String time) throws IOException, TemplateException {
+//            String response;
+//            Configuration cfg = new Configuration(new Version("2.3.23"));
+//            cfg.setClassForTemplateLoading(CryptoDailyDataFetcherServiceTest.class, "/");
+//            cfg.setDefaultEncoding("UTF-8");
+//            Template template =
+//                    cfg.getTemplate("crypto_data_fetcher_daily_BTC_one_day_sample_response_expectation.ftl");
+//            Map<String, Object> templateData = new HashMap<>();
+//            if (!time.isEmpty()) {
+//                templateData.put("time", time);
+//            }
+//            try (StringWriter out = new StringWriter()) {
+//                template.process(templateData, out);
+//                response = out.getBuffer().toString();
+//                out.flush();
+//            }
+//            return response;
+//        }
+
+//        public static JSONObject makeStubFromDataTable(String fileName, DataTable dataTable, String... columnsToIgnore) throws IOException, JSONException {
+//            JSONObject jsonObject = new JSONObject();
+//            JSONArray data = convertDataTableToJSONArray(dataTable, EMPTY_STRING);
+//            jsonObject.put(DATA_KEY, data);
+//            Files.write(Paths.get(TEMP_PATH_KEY +fileName), jsonObject.toString(4).replaceAll(BACK_SLASH_REGEX, EMPTY_STRING).getBytes());
+//            return jsonObject;
+//        }
     }
 
 }

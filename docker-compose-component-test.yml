@@ -8,11 +8,14 @@ services:
       - "127.0.0.1:8080:8080"
     # bucket name is not set here as localstack malforms the url with pre-signed links
     # instead the bucket name is passed into the fileName parameter
+    # localstack creates the bucket using./aws/buckets.sh
     # see postman collection for examples
     environment:
       - BUCKET_NAME=$LEAVE_ME_BLANK
-      - ACCESS_KEY_ID=$ACCESS_KEY_ID
-      - SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY
+      - ACCESS_KEY_ID=localstack
+      - SECRET_ACCESS_KEY=localstack
+      - SERVICE_ENDPOINT=http://localhost:4566
+      - SIGNING_REGION=us-east-1
     network_mode: host
   localstack:
     image: localstack/localstack

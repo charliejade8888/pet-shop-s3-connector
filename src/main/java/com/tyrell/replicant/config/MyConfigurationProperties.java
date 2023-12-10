@@ -6,35 +6,53 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @ConfigurationProperties(prefix = "yaml")
-@PropertySource(value = "classpath:foo.yml", factory = YamlPropertySourceFactory.class)
+@PropertySource(value = "classpath:aws.yml", factory = YamlPropertySourceFactory.class)
 public class MyConfigurationProperties {
 
   private String authMethod;
-  private String username;
-  private String password;
+  private String accessKey;
+  private String secretKey;
+  private String serviceEndpoint;
+  private String signingRegion;
+
+  public String getSigningRegion() {
+    return signingRegion;
+  }
+
+  public void setSigningRegion(String signingRegion) {
+    this.signingRegion = signingRegion;
+  }
+
+  public String getServiceEndpoint() {
+    return serviceEndpoint;
+  }
+
+  public void setServiceEndpoint(String serviceEndpoint) {
+    this.serviceEndpoint = serviceEndpoint;
+  }
 
   public String getAuthMethod() {
     return authMethod;
   }
 
-  public String getUsername() {
-    return username;
+  public String getAccessKey() {
+    return accessKey;
   }
 
-  public String getPassword() {
-    return password;
+  public String getSecretKey() {
+    return secretKey;
   }
 
   public void setAuthMethod(String authMethod) {
     this.authMethod = authMethod;
   }
 
-  public void setUsername(String username) {
-    this.username = username;
+  public void setAccessKey(String accessKey) {
+    this.accessKey = accessKey;
   }
 
-  public void setPassword(String password) {
-    this.password = password;
+  public void setSecretKey(String secretKey) {
+    this.secretKey = secretKey;
   }
 
 }

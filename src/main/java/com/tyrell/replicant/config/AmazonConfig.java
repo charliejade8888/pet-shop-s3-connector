@@ -6,24 +6,26 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 // TODO BS security
 @Configuration
 public class AmazonConfig {
+
+    @Autowired
+    private MyConfigurationProperties props; // TODO switch to un-autowired constructor injection
+
     @Bean
     public AmazonS3 F() {
 
         // TODO BS get running w gradle 9/update native gradle
-        // TODO BS - pass env var to application.yml - google how to do this
         AWSCredentials awsCredentials =
-                new BasicAWSCredentials("localstack", "localstack");
+                new BasicAWSCredentials(props.getAccessKey(), props.getSecretKey());
 
         return AmazonS3ClientBuilder
                 .standard()
-//                .withRegion("us-east-1") // TODO BS
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:4566", "us-east-1"))
-//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://s3.us-east-1.amazonaws.com", "us-east-1"))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(props.getServiceEndpoint(), props.getSigningRegion()))
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
 

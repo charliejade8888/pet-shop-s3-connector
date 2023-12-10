@@ -10,4 +10,6 @@ services:
       - BUCKET_NAME=$BUCKET_NAME
       - ACCESS_KEY_ID=$ACCESS_KEY_ID
       - SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY
+      - SERVICE_ENDPOINT=http://s3.us-east-1.amazonaws.com
+      - SIGNING_REGION=us-east-1
     network_mode: host

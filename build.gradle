@@ -1,21 +1,31 @@
+import com.github.spotbugs.snom.SpotBugsReport
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.1.3'
 	id 'io.spring.dependency-management' version '1.1.3'
 	id 'org.graalvm.buildtools.native' version '0.9.24'
+	id "com.github.spotbugs" version "4.7.2"
+	id "checkstyle"
+	id "jacoco"
+	id "pmd"
 }
 
 group = 'com.tyrell'
 version = '0.0.1-SNAPSHOT'
 
 project.ext {
-	cucumberVersion = '1.2.5'
-//	junitVersion = '4.12'
-//	springBootVersion = '2.0.2.RELEASE'
-	restAssuredVersion = '2.9.0'
-	jsonVersion = '20180130'
-//	swaggerVersion = '2.0.2'
+	//	swaggerVersion = '2.0.2'
 //	mockServerVersion = '3.10.4'
+	jsonVersion = '20180130'
+	cucumberVersion = "6.11.0"
+	junit5Version = "5.7.2"
+	restAssuredVersion = "2.9.0"
+	swaggerVersion = "3.0.0"
+	assertjVersion = "3.20.2"
+	checkStyleToolVersion = "8.41"
+	pmdToolVersion = "6.21.0"
+	jacocoToolVersion = "0.8.7"
 }
 
 java {
@@ -39,6 +49,7 @@ dependencies {
 //	implementation group: "org.springframework.boot", name: "spring-boot-starter"
 	implementation group: "org.springframework.boot", name: "spring-boot-starter-actuator"
 	implementation 'com.amazonaws:aws-java-sdk:1.12.548'
+	implementation 'org.json:json:20220924'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
@@ -86,18 +97,120 @@ sourceSets {
 	}
 }
 
+checkstyle {
+	toolVersion checkStyleToolVersion
+	ignoreFailures false
+	showViolations true
+	reportsDir = file("$project.buildDir/reports/checkstyle")
+	configFile = file("$rootProject.projectDir/config/checkstyle/google_checks.xml")
+	maxWarnings = 0
+}
+
+jacoco {
+	toolVersion = jacocoToolVersion
+}
+
+build {
+	dependsOn jacocoTestCoverageVerification
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir("reports/jacocoHtml")
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 1.0
+			}
+			element = "CLASS"
+			excludes = ["com.tyrell.replicant.Application",
+						"com.tyrell.replicant.config.SwaggerConfiguration",
+						"com.tyrell.replicant.service.CryptoDataFetcherRestParameterObject",
+						"com.tyrell.replicant.service.CryptoDataFetcherRestParameterObject.CryptoDataFetcherRestParameterObjectBuilder",
+						"com.tyrell.replicant.exception.RestExceptionHandler",
+						"com.tyrell.replicant.exception.MyException",
+						"com.tyrell.replicant.config.MyConfigurationProperties",
+						"com.tyrell.replicant.config.YamlPropertySourceFactory"]
+		}
+	}
+}
+
+pmd {
+	consoleOutput = true
+	ignoreFailures = false //set to false for a fail
+	toolVersion = pmdToolVersion
+	rulesMinimumPriority = 5
+	maxFailures = 0
+	ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
+	sourceSets = [sourceSets.main]
+}
+
+spotbugs {
+	ignoreFailures = false
+	showStackTraces = true
+	showProgress = true
+}
+
+spotbugsMain {
+	reports(({
+		html {
+			enabled = true
+			destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+			stylesheet = "fancy-hist.xsl"
+		}
+		xml {
+			enabled = false
+		}
+	} as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>))
+}
+
+spotbugsTest {
+	reports(({
+		html {
+			enabled = true
+			destination = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+			stylesheet = "fancy-hist.xsl"
+		}
+		xml {
+			enabled = false
+		}
+	} as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>))
+}
+
 tasks.withType(Test) {
 	scanForTestClasses = false
 	include "**/*Test.class"
 }
 
+tasks.withType(Checkstyle) {
+	reports {
+		xml.required = false
+		html.required = true
+	}
+}
+
 //Dynamic exclude through property defined in the build.gradle file
 //to run cucumber test use ./gradlew build -Pcomponent-test
 test {
+	finalizedBy jacocoTestReport
+	jacoco {
+		destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+		classDumpDir = file("$buildDir/jacoco/classpathdumps")
+	}
 	if (project.hasProperty('component-test')) {
 		include "**/RunATDDTest.class"
 		exclude "**/*Test.class"
 	}
+}
+
+task ct(type: Exec) {
+	commandLine "./gradlew", "clean", "build", "-Pcomponent-test"
 }
 
 task ut(type: Exec) {
@@ -111,6 +224,15 @@ task ut(type: Exec) {
 //	classpath = sourceSets["component-test"].runtimeClasspath
 //	useJUnitPlatform()
 //	dependsOn("assemble")
+//}
+
+//task bootRunWithSwagger(type: BootRun, dependsOn: "build") {
+//	group = "Application"
+//	mainClass.set("com.tyrell.replicant.Application")
+//	doFirst() {
+//		classpath = sourceSets.main.runtimeClasspath
+//		systemProperty "spring.profiles.active", "swagger"
+//	}
 //}
 
 

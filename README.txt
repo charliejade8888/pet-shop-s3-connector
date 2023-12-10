@@ -13,3 +13,21 @@ config:
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions
 
 bucket set-up here - https://medium.com/javarevisited/upload-and-retrieve-files-form-aws-s3-using-the-presigned-url-pattern-in-java-ecde26e9441f
+
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "PUT",
+            "GET",
+            "HEAD",
+            "POST",
+            "DELETE"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ]
+    }
+]

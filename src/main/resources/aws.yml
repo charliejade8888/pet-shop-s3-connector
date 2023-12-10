@@ -1,0 +1,5 @@
+yaml:
+  accessKey: ${ACCESS_KEY_ID}
+  secretKey: ${SECRET_ACCESS_KEY}
+  serviceEndpoint: ${SERVICE_ENDPOINT}
+  signingRegion: ${SIGNING_REGION}
