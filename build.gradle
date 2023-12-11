@@ -218,8 +218,7 @@ test {
 }
 
 task ct(type: Exec) {
-	// TODO exclude spotbugs tasks
-	commandLine "./gradlew", "clean", "build", "-x", "checkstyleAot", "-x", "checkstyleAotTest", "-x", "checkstyleMain", "-x", "checkstyleTest", "-x", "pmdMain", "-x", "jacocoTestCoverageVerification", "-Pcomponent-test"
+	commandLine "./gradlew", "clean", "build", "-x", "checkstyleAot", "-x", "checkstyleAotTest", "-x", "checkstyleMain", "-x", "checkstyleTest", "-x", "pmdMain", "-x", "jacocoTestCoverageVerification", "-x", "spotbugsAot",  "-x", "spotbugsTest","-x", "spotbugsMain", "-x", "spotbugsAotTest","-Pcomponent-test"
 }
 
 task ut(type: Exec) {
