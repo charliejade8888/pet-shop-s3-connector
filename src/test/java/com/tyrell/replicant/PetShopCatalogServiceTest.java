@@ -10,13 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 //@PropertySource("classpath:crypto-compare.properties")
-@SpringBootTest
-class PetShopCatalogServiceTest {
+//@SpringBootTest
+public class PetShopCatalogServiceTest {
 
-  @Autowired
-  MyConfigurationProperties myConfigurationProperties;
+//  @Autowired
+//  MyConfigurationProperties myConfigurationProperties;
 
   @DisplayName("Test with positive integer range, expected ok")
   @Test

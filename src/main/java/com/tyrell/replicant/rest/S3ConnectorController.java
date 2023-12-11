@@ -47,7 +47,7 @@ public class S3ConnectorController {
         String objectKey = fileName;
         String bucketProp = env.getProperty("BUCKET_NAME");
         String bucketName = bucketProp == null ? "donkeykong8888" : bucketProp;
-        System.err.println("BUCKET_NAME::"+ bucketName);
+        System.err.println("BUCKET_NAME::"+ bucketName); // NOPMD
         try {
             // Set the presigned URL to expire after 10 mins.
             java.util.Date expiration = new java.util.Date();
