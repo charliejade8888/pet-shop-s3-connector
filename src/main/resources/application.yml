@@ -47,3 +47,9 @@ logging:
   level:
     root: INFO
     #ERROR
+
+#  spring.banner.image.location=classpath:banner.gif
+#  spring.banner.image.width=  //TODO
+#  spring.banner.image.height= //TODO
+#  spring.banner.image.margin= //TODO
+#  spring.banner.image.invert= //TODO
