@@ -6,6 +6,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.Version;
 import java.io.StringWriter;
 import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -37,10 +38,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class StepDefinitions {
 
+    private static Response lastResponse;
+
     @Given("^the following daily data is available for bitcoin yesterday:$")
     public void the_following_daily_data_is_available_for_bitcoin_yesterday(DataTable dataTable) throws IOException, InterruptedException {
+       beforeAll(); // TODO not working via @BeforeAll fixme!! ook at cryptodatafetcher
         var var = 0;
 //        val ?? not in java, use final var
+        lastResponse = RestAssured
+                .given()
+                .get("http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl?fileName=myfile.bla");// TODO use restAssured param
+        assertThat(lastResponse.getStatusCode()).isEqualTo(200);
     }
 
     @When("^I make a request for daily data \"([^\"]*)\" from \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -53,10 +61,9 @@ public class StepDefinitions {
     }
 
     // TODO don't need an inner static class???
-    public static final class Companion {
+//    public static final class Companion {
 
-        private static boolean containerStarted;
-
+        private static boolean containerStarted = false;
         private static String client_id = "some_client_id" ; // petshopapi
         private static String client_secret = "some_client_secret"; // 7riSklHZfjhmEGrDFakimD2heGOBImCs
         private static String authPath = "http://localhost:8180/realms/petshoprealm/protocol/openid-connect/token";
@@ -76,9 +83,9 @@ public class StepDefinitions {
         // TODO what is <?>
         private static final DockerComposeContainer<?> dockerComposeContainer =
                 new DockerComposeContainer(new File("docker-compose-component-test.yml"))
-                .waitingFor("pet-shop-catalog", new HostPortWaitStrategy()); // TODO need to rename for this service
+                .waitingFor("pet-shop-s3-connector", new HostPortWaitStrategy()); // TODO need to rename for this service
 
-        @Before
+        @BeforeAll
         private static void beforeAll() {
             if (!containerStarted) {
                 dockerComposeContainer.withLocalCompose(true); // version in testcontainers library v 1.17.5 buggy
@@ -154,6 +161,6 @@ public class StepDefinitions {
 //            Files.write(Paths.get(TEMP_PATH_KEY +fileName), jsonObject.toString(4).replaceAll(BACK_SLASH_REGEX, EMPTY_STRING).getBytes());
 //            return jsonObject;
 //        }
-    }
+//    }
 
 }
