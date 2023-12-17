@@ -73,6 +73,8 @@ dependencies {
 	testImplementation("io.cucumber:cucumber-java:7.9.0")
 	testImplementation("io.cucumber:cucumber-spring:7.9.0")
 	testImplementation("io.cucumber:cucumber-junit:7.9.0")
+
+
 	testImplementation("io.rest-assured:rest-assured")
 	testImplementation("io.rest-assured:json-path")
 	testImplementation("io.rest-assured:xml-path")
@@ -185,8 +187,10 @@ spotbugsTest {
 
 tasks.withType(Test) {
 	scanForTestClasses = false
-	include "**/*Test.class"
-	exclude "**/RunATDDTest.class"
+	if (!project.hasProperty('component-test')) {
+		include "**/*Test.class"
+		exclude "**/ATRunner.class"
+	}
 }
 
 tasks.withType(Checkstyle) {
@@ -212,13 +216,24 @@ test {
 		classDumpDir = file("$buildDir/jacoco/classpathdumps")
 	}
 	if (project.hasProperty('component-test')) {
-		include "**/RunATDDTest.class"
+		include "**/ATRunner.class"
 		exclude "**/*Test.class"
 	}
 }
 
+tasks.named("test") {
+	useJUnitPlatform()
+	systemProperty("cucumber.publish.quiet", "false")
+}
+
+test {
+	testLogging {
+		events "passed", "skipped", "failed", "standardOut", "standardError"
+	}
+}
+
 task ct(type: Exec) {
-	commandLine "./gradlew", "clean", "build", "-x", "checkstyleAot", "-x", "checkstyleAotTest", "-x", "checkstyleMain", "-x", "checkstyleTest", "-x", "pmdMain", "-x", "jacocoTestCoverageVerification", "-x", "spotbugsAot",  "-x", "spotbugsTest","-x", "spotbugsMain", "-x", "spotbugsAotTest","-Pcomponent-test"
+	commandLine "./gradlew", "clean", "build", "-Pcomponent-test", "-x", "checkstyleAot", "-x", "checkstyleAotTest", "-x", "checkstyleMain", "-x", "checkstyleTest", "-x", "pmdMain", "-x", "jacocoTestCoverageVerification", "-x", "spotbugsAot",  "-x", "spotbugsTest","-x", "spotbugsMain", "-x", "spotbugsAotTest"
 }
 
 task ut(type: Exec) {
@@ -245,5 +260,3 @@ project.gradle.startParameter.excludedTaskNames.add('checkstyleAotTest')
 //		systemProperty "spring.profiles.active", "swagger"
 //	}
 //}
-
-

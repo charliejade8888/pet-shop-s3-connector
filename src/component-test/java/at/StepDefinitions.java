@@ -14,6 +14,7 @@ import io.cucumber.datatable.DataTable;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.json.JSONException;
+import org.junit.BeforeClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,9 +41,20 @@ public class StepDefinitions {
 
     private static Response lastResponse;
 
+    @Before
+    public static void beforeAll() {
+        if (!containerStarted) {
+            dockerComposeContainer.withLocalCompose(true); // version in testcontainers library v 1.17.5 buggy
+            dockerComposeContainer.start();
+            containerStarted = true;
+//                Thread.sleep(20000) // workaround for ARM64
+        }
+        dockerComposeContainer.withRemoveImages(DockerComposeContainer.RemoveImages.ALL);
+    }
+
     @Given("^the following daily data is available for bitcoin yesterday:$")
     public void the_following_daily_data_is_available_for_bitcoin_yesterday(DataTable dataTable) throws IOException, InterruptedException {
-       beforeAll(); // TODO not working via @BeforeAll fixme!! ook at cryptodatafetcher
+//       beforeAll(); // TODO not working via @BeforeAll fixme!! ook at cryptodatafetcher
         var var = 0;
 //        val ?? not in java, use final var
         lastResponse = RestAssured
@@ -84,17 +96,6 @@ public class StepDefinitions {
         private static final DockerComposeContainer<?> dockerComposeContainer =
                 new DockerComposeContainer(new File("docker-compose-component-test.yml"))
                 .waitingFor("pet-shop-s3-connector", new HostPortWaitStrategy()); // TODO need to rename for this service
-
-        @BeforeAll
-        private static void beforeAll() {
-            if (!containerStarted) {
-                dockerComposeContainer.withLocalCompose(true); // version in testcontainers library v 1.17.5 buggy
-                dockerComposeContainer.start();
-                containerStarted = true;
-//                Thread.sleep(20000) // workaround for ARM64
-            }
-            dockerComposeContainer.withRemoveImages(DockerComposeContainer.RemoveImages.ALL);
-        }
 
         public static JSONArray convertDataTableToJSONArray(DataTable dataTable, String... columnsToIgnore) throws JSONException {
             List<List<String>> table = dataTable.asLists();
