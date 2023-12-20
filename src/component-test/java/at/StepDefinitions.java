@@ -41,22 +41,10 @@ public class StepDefinitions {
 
     private static Response lastResponse;
 
-    @Before
-    public static void beforeAll() {
-        if (!containerStarted) {
-            dockerComposeContainer.withLocalCompose(true); // version in testcontainers library v 1.17.5 buggy
-            dockerComposeContainer.start();
-            containerStarted = true;
-//                Thread.sleep(20000) // workaround for ARM64
-        }
-        dockerComposeContainer.withRemoveImages(DockerComposeContainer.RemoveImages.ALL);
-    }
-
     @Given("^the following daily data is available for bitcoin yesterday:$")
     public void the_following_daily_data_is_available_for_bitcoin_yesterday(DataTable dataTable) throws IOException, InterruptedException {
-//       beforeAll(); // TODO not working via @BeforeAll fixme!! ook at cryptodatafetcher
-        var var = 0;
-//        val ?? not in java, use final var
+        var x = 0;
+        final var y = 0;
         lastResponse = RestAssured
                 .given()
                 .get("http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl?fileName=myfile.bla");// TODO use restAssured param
@@ -72,15 +60,24 @@ public class StepDefinitions {
 
     }
 
-    // TODO don't need an inner static class???
-//    public static final class Companion {
+    public static final class Companion { // public is needed for @Before annotation
+        @Before
+        public static void beforeAll() {
+            if (!containerStarted) {
+                dockerComposeContainer.withLocalCompose(true); // version in testcontainers library v 1.17.5 buggy
+                dockerComposeContainer.start();
+                containerStarted = true;
+//          Thread.sleep(20000) // workaround for ARM64
+            }
+            dockerComposeContainer.withRemoveImages(DockerComposeContainer.RemoveImages.ALL);
+        }
 
         private static boolean containerStarted = false;
         private static String client_id = "some_client_id" ; // petshopapi
         private static String client_secret = "some_client_secret"; // 7riSklHZfjhmEGrDFakimD2heGOBImCs
         private static String authPath = "http://localhost:8180/realms/petshoprealm/protocol/openid-connect/token";
 
-        private String getToken() {
+        private static String getToken() {
              Response tokenResponse =
                     RestAssured.given()
                             .contentType("application/x-www-form-urlencoded")
@@ -95,7 +92,7 @@ public class StepDefinitions {
         // TODO what is <?>
         private static final DockerComposeContainer<?> dockerComposeContainer =
                 new DockerComposeContainer(new File("docker-compose-component-test.yml"))
-                .waitingFor("pet-shop-s3-connector", new HostPortWaitStrategy()); // TODO need to rename for this service
+                .waitingFor("pet-shop-s3-connector", new HostPortWaitStrategy());
 
         public static JSONArray convertDataTableToJSONArray(DataTable dataTable, String... columnsToIgnore) throws JSONException {
             List<List<String>> table = dataTable.asLists();
@@ -162,6 +159,6 @@ public class StepDefinitions {
 //            Files.write(Paths.get(TEMP_PATH_KEY +fileName), jsonObject.toString(4).replaceAll(BACK_SLASH_REGEX, EMPTY_STRING).getBytes());
 //            return jsonObject;
 //        }
-//    }
+    }
 
 }
