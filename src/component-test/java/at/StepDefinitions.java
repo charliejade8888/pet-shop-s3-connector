@@ -46,7 +46,7 @@ public class StepDefinitions {
         var x = 0;
         final var y = 0;
         lastResponse = RestAssured
-                .given()
+                .given() // TODO note here about postman collection on passing n bucetname to lcalstack ... below may need correcting
                 .get("http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl?fileName=myfile.bla");// TODO use restAssured param
         assertThat(lastResponse.getStatusCode()).isEqualTo(200);
     }
