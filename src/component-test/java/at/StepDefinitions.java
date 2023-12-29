@@ -1,63 +1,68 @@
 package at;
 
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.Version;
-import java.io.StringWriter;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
-import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
+
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.junit.BeforeClass;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import static java.math.BigInteger.ZERO;
-
-import org.json.JSONObject;
-import org.json.JSONArray;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Locale;
+
+import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = {CucumberTestConfig.class})
 @ActiveProfiles("test")
 public class StepDefinitions {
 
-    private static Response lastResponse;
+    // TODO https://docs.gradle.org/current/samples/sample_java_modules_multi_project.html
 
-    @Given("^the following daily data is available for bitcoin yesterday:$")
-    public void the_following_daily_data_is_available_for_bitcoin_yesterday(DataTable dataTable) throws IOException, InterruptedException {
+//    Image a  = new com.tyrell.replicant.model.Image();
+
+    private static Response lastResponse;
+    private static RequestSpecification request;
+    private static String preSignedLinkPath;
+
+    @Given("I need a pre-signed link to {string} a file {string} into a bucket {string}:")
+    public void i_need_a_pre_signed_link(String action, String fileName, String bucketName) {
+        preSignedLinkPath = action == "upload"
+                ? "http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl"
+                : "http://127.0.0.1:8080/api/v1/todo/getPresignedUrl";
+        request = RestAssured
+                .given()
+                .queryParam("fileName", bucketName + "/" + fileName);
+    }
+
+    @When("I make a request for the link")
+    public void i_make_a_request_for_the_link() {
         var x = 0;
         final var y = 0;
-        lastResponse = RestAssured
-                .given() // TODO note here about postman collection on passing n bucetname to lcalstack ... below may need correcting
-                .get("http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl?fileName=myfile.bla");// TODO use restAssured param
+        lastResponse = request
+                .get(preSignedLinkPath);
+    }
+
+    @Then("the pre-signed link should be successfully returned")
+    public void the_pre_sgned_link_should_be_successfully_returned() {
         assertThat(lastResponse.getStatusCode()).isEqualTo(200);
-    }
-
-    @When("^I make a request for daily data \"([^\"]*)\" from \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void i_make_a_request_for_daily_data(String baseCurrency, String from, String to) {
-    }
-
-    @Then("^the following data should be returned:$")
-    public void the_following_data_should_be_returned(DataTable dataTable) throws Throwable {
-
     }
 
     public static final class Companion { // public is needed for @Before annotation
