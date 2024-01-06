@@ -1,10 +1,10 @@
-package com.tyrell.replicant.service;
+package com.tyrell.replicant.s3connector;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.tyrell.replicant.repository.ImageRepository;
-import com.tyrell.replicant.model.Image;
+import com.tyrell.replicant.s3connector.ImageRepository;
+import com.tyrell.replicant.s3connector.Image;
 import com.tyrell.replicant.config.BucketName;
 
 import java.io.IOException;
@@ -14,8 +14,8 @@ import static org.apache.http.entity.ContentType.*;
 
 @Service
 @AllArgsConstructor
-public class S3ConnectorService {
-    private final FileStore fileStore;
+class S3ConnectorService {
+    private final com.tyrell.replicant.s3connector.FileStore fileStore;
     private final ImageRepository repository;
 
     public Image saveImage(String title, String description, MultipartFile file) {

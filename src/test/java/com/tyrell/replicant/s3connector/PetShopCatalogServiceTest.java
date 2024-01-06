@@ -1,4 +1,4 @@
-package com.tyrell.replicant;
+package com.tyrell.replicant.s3connector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,6 +17,9 @@ public class PetShopCatalogServiceTest {
 
 //  @Autowired
 //  MyConfigurationProperties myConfigurationProperties;
+
+  Request a = new Request();
+
 
   @DisplayName("Test with positive integer range, expected ok")
   @Test

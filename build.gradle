@@ -127,8 +127,8 @@ jacocoTestCoverageVerification {
 			element = "CLASS"
 			excludes = ["com.tyrell.replicant.Application",
 						"com.tyrell.replicant.config.SwaggerConfiguration",
-						"com.tyrell.replicant.service.CryptoDataFetcherRestParameterObject",
-						"com.tyrell.replicant.service.CryptoDataFetcherRestParameterObject.CryptoDataFetcherRestParameterObjectBuilder",
+						"com.tyrell.replicant.s3connector.service.CryptoDataFetcherRestParameterObject",
+						"com.tyrell.replicant.s3connector.service.CryptoDataFetcherRestParameterObject.CryptoDataFetcherRestParameterObjectBuilder",
 						"com.tyrell.replicant.exception.RestExceptionHandler",
 						"com.tyrell.replicant.exception.MyException",
 						"com.tyrell.replicant.config.MyConfigurationProperties",

@@ -1,4 +1,4 @@
-package com.tyrell.replicant.rest;
+package com.tyrell.replicant.s3connector;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

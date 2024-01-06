@@ -1,4 +1,4 @@
-package com.tyrell.replicant.model;
+package com.tyrell.replicant.s3connector;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import jakarta.persistence.GeneratedValue;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Image {
+class Image {
     @Id
     @GeneratedValue
     private Long id;

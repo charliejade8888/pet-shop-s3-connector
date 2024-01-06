@@ -1,29 +1,22 @@
-package com.tyrell.replicant.rest;
+package com.tyrell.replicant.s3connector;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.tyrell.replicant.model.Image;
-import com.tyrell.replicant.service.S3ConnectorService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/todo")// TODO change
 @AllArgsConstructor
 @CrossOrigin("*")
-public class S3ConnectorController {
+class S3ConnectorController {
     S3ConnectorService service;
     private final AmazonS3 amazonS3;
 // TODO pmd/spotbugs etc

@@ -1,4 +1,4 @@
-package com.tyrell.replicant.service;
+package com.tyrell.replicant.s3connector;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 @Service
-public class FileStore {
+class FileStore {
     private final AmazonS3 amazonS3;
 
     public void upload(String path,
