@@ -36,7 +36,7 @@ public class StepDefinitions {
 
     // TODO https://docs.gradle.org/current/samples/sample_java_modules_multi_project.html
 
-//    Image a  = new com.tyrell.replicant.model.Image();
+    // TODO mention aws folder in README + add scenario for using links
 
     private static Response lastResponse;
     private static RequestSpecification request;
