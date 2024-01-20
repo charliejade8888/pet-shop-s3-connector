@@ -10,6 +10,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONArray;
@@ -20,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.util.Locale;
 
 import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
+import static org.springframework.web.servlet.function.RequestPredicates.contentType;
 
 @ContextConfiguration(classes = {CucumberTestConfig.class})
 @ActiveProfiles("test")
@@ -43,14 +47,20 @@ public class StepDefinitions {
     private static RequestSpecification request;
     private static String preSignedLinkPath;
 
-    @Given("I need a pre-signed link to {string} a file {string} into a bucket {string}:")
-    public void i_need_a_pre_signed_link(String action, String fileName, String bucketName) {
+    @Given("I need a pre-signed link to {string} a file {string} using bucket {string}")
+    public void i_need_a_pre_signed_link_to_a_file_using_bucket(String action, String fileName, String bucketName) {
         preSignedLinkPath = action == "upload"
                 ? "http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl"
                 : "http://127.0.0.1:8080/api/v1/todo/getPresignedUrl";
         request = RestAssured
                 .given()
                 .queryParam("fileName", bucketName + "/" + fileName);
+    }
+
+    @Given("I use the link to {string} a file {string} into a bucket {string}")
+    public void i_use_the_link_to_a_file_into_a_bucket(String string, String string2, String string3) {
+        // TODO - this is for upload/download
+        throw new io.cucumber.java.PendingException();
     }
 
     @When("I make a request for the link")
@@ -62,9 +72,25 @@ public class StepDefinitions {
     }
 
     @Then("the pre-signed link should be successfully returned")
-    public void the_pre_sgned_link_should_be_successfully_returned() {
+    public void the_pre_signed_link_should_be_successfully_returned() throws IOException {
         assertThat(lastResponse.getStatusCode()).isEqualTo(200);
+
+//        // Given
+//        File file = new org.junit.rules.TemporaryFolder().newFile("my.txt");
+//        FileUtils.writeStringToFile(file, "Hello World", "ISO-8859-1");
+//
+//        // When
+//        lastResponse = RestAssured.
+//                given().
+//                contentType(ContentType.BINARY).
+//                body(file).
+//                when().
+//                post("preSignedLinkPath");//.
+////                then().
+////                statusCode(200).
+////                body(equalTo("Hello World"));
     }
+
 
     public static final class Companion { // public is needed for @Before annotation
         @Before
