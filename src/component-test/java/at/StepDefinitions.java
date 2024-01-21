@@ -10,13 +10,17 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import io.restassured.RestAssured;
+import io.restassured.config.EncoderConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.DockerComposeContainer;
@@ -24,15 +28,21 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 
 import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 import static org.springframework.web.servlet.function.RequestPredicates.contentType;
+import static org.testcontainers.shaded.org.apache.commons.io.FileUtils.getFile;
+import static reactor.core.publisher.Mono.when;
 
 @ContextConfiguration(classes = {CucumberTestConfig.class})
 @ActiveProfiles("test")
@@ -58,9 +68,28 @@ public class StepDefinitions {
     }
 
     @Given("I use the link to {string} a file {string} into a bucket {string}")
-    public void i_use_the_link_to_a_file_into_a_bucket(String string, String string2, String string3) {
-        // TODO - this is for upload/download
-        throw new io.cucumber.java.PendingException();
+    public void i_use_the_link_to_a_file_into_a_bucket(String action, String fileName, String bucketName) throws IOException {
+        final File file = new File("/tmp", fileName);
+        FileUtils.writeStringToFile(file, "Hello World", "ISO-8859-1");
+        String path = lastResponse.getBody().asString();
+        // TODO comment out urlEncodingEnabled/.config line
+        // TODO try multi-part
+        // TODO remove content -type
+        if(action.equals("upload")) {
+          RestAssured.urlEncodingEnabled = false;
+            lastResponse = RestAssured.
+                    given()
+                    .contentType("text/plain")
+                    .config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+                    .body(file)
+                    .when()
+                    .put(path)
+                    .then().extract().response();
+        } else {
+            lastResponse = RestAssured.
+                    given().
+                    get(path);
+        }
     }
 
     @When("I make a request for the link")
@@ -74,23 +103,15 @@ public class StepDefinitions {
     @Then("the pre-signed link should be successfully returned")
     public void the_pre_signed_link_should_be_successfully_returned() throws IOException {
         assertThat(lastResponse.getStatusCode()).isEqualTo(200);
-
-//        // Given
-//        File file = new org.junit.rules.TemporaryFolder().newFile("my.txt");
-//        FileUtils.writeStringToFile(file, "Hello World", "ISO-8859-1");
-//
-//        // When
-//        lastResponse = RestAssured.
-//                given().
-//                contentType(ContentType.BINARY).
-//                body(file).
-//                when().
-//                post("preSignedLinkPath");//.
-////                then().
-////                statusCode(200).
-////                body(equalTo("Hello World"));
     }
 
+    @Then("the file is present")
+    public void the_file_is_present() {
+        lastResponse.
+                then().
+                statusCode(200).
+                body(equalTo("Hello World"));
+    }
 
     public static final class Companion { // public is needed for @Before annotation
         @Before
