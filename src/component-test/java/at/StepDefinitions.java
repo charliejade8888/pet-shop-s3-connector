@@ -27,12 +27,10 @@ import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,23 +70,21 @@ public class StepDefinitions {
         final File file = new File("/tmp", fileName);
         FileUtils.writeStringToFile(file, "Hello World", "ISO-8859-1");
         String path = lastResponse.getBody().asString();
-        // TODO comment out urlEncodingEnabled/.config line
-        // TODO try multi-part
-        // TODO remove content -type
         if(action.equals("upload")) {
           RestAssured.urlEncodingEnabled = false;
             lastResponse = RestAssured.
                     given()
-                    .contentType("text/plain")
-                    .config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().appendDefaultContentCharsetToContentTypeIfUndefined(false)))
-                    .body(file)
+                    .multiPart(file)
                     .when()
                     .put(path)
                     .then().extract().response();
         } else {
             lastResponse = RestAssured.
                     given().
-                    get(path);
+                    get(path).
+                    andReturn(); // content not fetched until asXXX() called
+
+
         }
     }
 
@@ -106,7 +102,12 @@ public class StepDefinitions {
     }
 
     @Then("the file is present")
-    public void the_file_is_present() {
+    public void the_file_is_present() throws IOException {
+//        try(InputStream downloadedFileIS = lastResponse.asInputStream()){ // try with resource closes resources automatically
+//            File targetFile = new File("/home/charliejade/out.txt");
+//            Files.copy(downloadedFileIS, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//        } // does not load entire file into memory
+
         lastResponse.
                 then().
                 statusCode(200).
