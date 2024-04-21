@@ -68,7 +68,6 @@ dependencies {
 	testImplementation("io.cucumber:cucumber-spring:7.9.0")
 	testImplementation("io.cucumber:cucumber-junit:7.9.0")
 
-
 	testImplementation("io.rest-assured:rest-assured")
 	testImplementation("io.rest-assured:json-path")
 	testImplementation("io.rest-assured:xml-path")

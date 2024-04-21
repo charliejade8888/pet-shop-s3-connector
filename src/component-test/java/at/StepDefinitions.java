@@ -65,8 +65,9 @@ public class StepDefinitions {
                 .queryParam("fileName", bucketName + "/" + fileName);
     }
 
-    @Given("I use the link to {string} a file {string} into a bucket {string}")
+    @Given("I use the link to {string} a file {string} into a bucket {string}") // TODO BS rename method name!
     public void i_use_the_link_to_a_file_into_a_bucket(String action, String fileName, String bucketName) throws IOException {
+        // TODO don't need bucketname here!
         final File file = new File("/tmp", fileName);
         FileUtils.writeStringToFile(file, "Hello World", "ISO-8859-1");
         String path = lastResponse.getBody().asString();

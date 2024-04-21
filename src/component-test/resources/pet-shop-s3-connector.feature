@@ -18,3 +18,4 @@ Feature: Pet Shop S3 Connector
     When I use the link to "download" a file "my.txt" into a bucket "bucket"
     Then the file is present
 #    TODO then for verify file contents / check file exists and has content as expected (pass in string above)
+#  TODO lump some of these together !
