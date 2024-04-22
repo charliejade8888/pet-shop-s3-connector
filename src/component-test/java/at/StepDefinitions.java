@@ -75,7 +75,8 @@ public class StepDefinitions {
           RestAssured.urlEncodingEnabled = false;
             lastResponse = RestAssured.
                     given()
-                    .multiPart(file)
+                    .multiPart(file) // multipart allows for streaming the file without loading it all into memory at once.
+//                    .multiPart("json", jsonData, ContentType.JSON) // Add JSON data as another multi-part form parameter
                     .when()
                     .put(path)
                     .then().extract().response();

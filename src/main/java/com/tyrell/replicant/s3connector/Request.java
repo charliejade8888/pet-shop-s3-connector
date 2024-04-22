@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
-@NoArgsConstructor
+    @NoArgsConstructor
 @Builder
 class Request {
     private String hello;
