@@ -106,7 +106,7 @@ public class StepDefinitions {
     @Then("the file is present")
     public void the_file_is_present() throws IOException {
 //        try(InputStream downloadedFileIS = lastResponse.asInputStream()){ // try with resource closes resources automatically
-//            File targetFile = new File("/home/charliejade/out.txt");
+//            File targetFile = new File("/home/charliejade/out.txt"); // better use /tmp (or OS specific temp dir)
 //            Files.copy(downloadedFileIS, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 //        } // does not load entire file into memory
 
