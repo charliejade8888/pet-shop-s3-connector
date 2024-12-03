@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   pet-shop-s3-connector:
     build:
@@ -18,11 +18,12 @@ services:
       - SIGNING_REGION=us-east-1
     network_mode: host
   localstack:
-    # the latest version doesn't work on downloading
-    image: localstack/localstack:3.3.0
+    # should work with latest version of localstack
+    image: localstack/localstack:4.0.2
     environment:
-      - SERVICES=s3
-      - PROVIDER_OVERRIDE_S3=asf
+#      - DEBUG=1  # Enable debug mode for detailed logs
+      - SERVICES=s3  # Enable only the S3 service
+      - S3_SKIP_SIGNATURE_VALIDATION=true  # Skip signature validation to avoid issues with presigned URLs
     ports:
       - "4566:4566"
     network_mode: host

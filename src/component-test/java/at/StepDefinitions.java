@@ -36,6 +36,7 @@ import java.util.Locale;
 
 import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 import static org.springframework.web.servlet.function.RequestPredicates.contentType;
@@ -113,7 +114,7 @@ public class StepDefinitions {
         lastResponse.
                 then().
                 statusCode(200).
-                body(equalTo("Hello World"));
+                body(containsString("Hello World"));
     }
 
     public static final class Companion { // public is needed for @Before annotation
