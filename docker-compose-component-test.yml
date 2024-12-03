@@ -18,7 +18,8 @@ services:
       - SIGNING_REGION=us-east-1
     network_mode: host
   localstack:
-    image: localstack/localstack
+    # the latest version doesn't work on downloading
+    image: localstack/localstack:3.3.0
     environment:
       - SERVICES=s3
       - PROVIDER_OVERRIDE_S3=asf
