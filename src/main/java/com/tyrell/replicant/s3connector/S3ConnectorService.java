@@ -10,8 +10,6 @@ import com.tyrell.replicant.config.BucketName;
 import java.io.IOException;
 import java.util.*;
 
-import static org.apache.http.entity.ContentType.*;
-
 @Service
 @AllArgsConstructor
 class S3ConnectorService {
@@ -24,11 +22,9 @@ class S3ConnectorService {
             throw new IllegalStateException("Cannot upload empty file");
         }
         //Check if the file is an image
-        if (!Arrays.asList(IMAGE_PNG.getMimeType(),
-                IMAGE_BMP.getMimeType(),
-                IMAGE_GIF.getMimeType(),
-                IMAGE_JPEG.getMimeType()).contains(file.getContentType())) {
-            throw new IllegalStateException("FIle uploaded is not an image");
+        if (!Arrays.asList("image/png", "image/bmp", "image/gif", "image/jpeg")
+                .contains(file.getContentType())) {
+            throw new IllegalStateException("File uploaded is not an image");
         } // TODO check if apache http getmimtype usesmagic numbers to determine file type
 
 

@@ -6,24 +6,21 @@ services:
       dockerfile: Dockerfile.test
     ports:
       - "127.0.0.1:8080:8080"
-    # bucket name is not set here as localstack malforms the url with pre-signed links
-    # instead the bucket name is passed into the fileName parameter
-    # localstack creates the bucket using./aws/buckets.sh
-    # see postman collection for examples
     environment:
-      - BUCKET_NAME=$LEAVE_ME_BLANK
+      - BUCKET_NAME=bucket  # Now we can set the bucket name properly with AWS SDK v2
       - ACCESS_KEY_ID=localstack
       - SECRET_ACCESS_KEY=localstack
       - SERVICE_ENDPOINT=http://localhost:4566
       - SIGNING_REGION=us-east-1
     network_mode: host
   localstack:
-    # should work with latest version of localstack
     image: localstack/localstack:4.0.2
     environment:
 #      - DEBUG=1  # Enable debug mode for detailed logs
       - SERVICES=s3  # Enable only the S3 service
       - S3_SKIP_SIGNATURE_VALIDATION=true  # Skip signature validation to avoid issues with presigned URLs
+      - S3_FORCE_PATH_STYLE=true  # Force path-style URLs for S3
+      - AWS_DEFAULT_REGION=us-east-1
     ports:
       - "4566:4566"
     network_mode: host

@@ -1,13 +1,12 @@
 package com.tyrell.replicant.s3connector;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.util.IOUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,33 +16,44 @@ import java.util.Optional;
 @AllArgsConstructor
 @Service
 class FileStore {
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     public void upload(String path,
                        String fileName,
                        Optional<Map<String, String>> optionalMetaData,
                        InputStream inputStream) {
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        optionalMetaData.ifPresent(map -> {
-            if (!map.isEmpty()) {
-                map.forEach(objectMetadata::addUserMetadata);
-            }
-        });
         try {
-            amazonS3.putObject("spring-amazon-storage-bill", fileName, inputStream, objectMetadata);
-        } catch (AmazonServiceException e) {
+            PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
+                    .bucket("spring-amazon-storage-bill")
+                    .key(fileName);
+
+            // Add metadata if present
+            optionalMetaData.ifPresent(map -> {
+                if (!map.isEmpty()) {
+                    requestBuilder.metadata(map);
+                }
+            });
+
+            PutObjectRequest putObjectRequest = requestBuilder.build();
+
+            // Read all bytes from input stream for RequestBody
+            byte[] content = inputStream.readAllBytes();
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(content));
+        } catch (AwsServiceException | IOException e) {
             throw new IllegalStateException("Failed to upload the file", e);
         }
     }
 
     public byte[] download(String path, String key) {
         try {
-            S3Object object = amazonS3.getObject("spring-amazon-storage-bill", key);
-            S3ObjectInputStream objectContent = object.getObjectContent();
-            return IOUtils.toByteArray(objectContent);
-        } catch (AmazonServiceException | IOException e) {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket("spring-amazon-storage-bill")
+                    .key(key)
+                    .build();
+
+            return s3Client.getObjectAsBytes(getObjectRequest).asByteArray();
+        } catch (AwsServiceException e) {
             throw new IllegalStateException("Failed to download the file", e);
         }
     }
-
 }

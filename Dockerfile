@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM openjdk:21
 MAINTAINER PsiCom
 COPY build/libs/pet-shop-s3-connector-0.0.1-SNAPSHOT.jar pet-shop-s3-connector-0.0.1-SNAPSHOT.jar
 CMD java -jar /pet-shop-s3-connector-0.0.1-SNAPSHOT.jar

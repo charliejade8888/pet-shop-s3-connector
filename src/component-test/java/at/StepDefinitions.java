@@ -58,12 +58,12 @@ public class StepDefinitions {
 
     @Given("I need a pre-signed link to {string} a file {string} using bucket {string}")
     public void i_need_a_pre_signed_link_to_a_file_using_bucket(String action, String fileName, String bucketName) {
-        preSignedLinkPath = action == "upload"
-                ? "http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl"
-                : "http://127.0.0.1:8080/api/v1/todo/getPresignedUrl";
+        preSignedLinkPath = action.equals("upload")
+                ? "http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl"  // Use existing PUT presigned URL endpoint
+                : "http://127.0.0.1:8080/api/v1/todo/getPresignedUrl";   // Use existing GET presigned URL endpoint
         request = RestAssured
                 .given()
-                .queryParam("fileName", bucketName + "/" + fileName);
+                .queryParam("fileName", fileName);
     }
 
     @Given("I use the link to {string} a file {string} into a bucket {string}") // TODO BS rename method name!
@@ -72,22 +72,24 @@ public class StepDefinitions {
         final File file = new File("/tmp", fileName);
         FileUtils.writeStringToFile(file, "Hello World", "ISO-8859-1");
         String path = lastResponse.getBody().asString();
+        System.err.println("DEBUG: Using URL path: " + path); // Debug output
+
         if(action.equals("upload")) {
           RestAssured.urlEncodingEnabled = false;
             lastResponse = RestAssured.
                     given()
-                    .multiPart(file) // multipart allows for streaming the file without loading it all into memory at once.
-//                    .multiPart("json", jsonData, ContentType.JSON) // Add JSON data as another multi-part form parameter
+                    .multiPart(file) // Multipart as requested
                     .when()
-                    .put(path)
+                    .put(path) // Use PUT since we're using getPresignedPutUrl
                     .then().extract().response();
+            System.err.println("DEBUG: Upload response status: " + lastResponse.getStatusCode()); // Debug output
+            System.err.println("DEBUG: Upload response body: " + lastResponse.getBody().asString()); // Debug output
         } else {
             lastResponse = RestAssured.
                     given().
                     get(path).
                     andReturn(); // content not fetched until asXXX() called
-
-
+            System.err.println("DEBUG: Download response status: " + lastResponse.getStatusCode()); // Debug output
         }
     }
 
@@ -97,6 +99,11 @@ public class StepDefinitions {
         final var y = 0;
         lastResponse = request
                 .get(preSignedLinkPath);
+
+        // Add debugging to see what URL is generated
+        System.err.println("DEBUG: Presigned URL endpoint: " + preSignedLinkPath);
+        System.err.println("DEBUG: Response status: " + lastResponse.getStatusCode());
+        System.err.println("DEBUG: Generated presigned URL: " + lastResponse.getBody().asString());
     }
 
     @Then("the pre-signed link should be successfully returned")
@@ -111,10 +118,12 @@ public class StepDefinitions {
 //            Files.copy(downloadedFileIS, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 //        } // does not load entire file into memory
 
-        lastResponse.
-                then().
-                statusCode(200).
-                body(containsString("Hello World"));
+        // The lastResponse should contain the downloaded file content from the presigned URL
+        // Validate that the file was successfully downloaded and contains the expected content
+        lastResponse
+                .then()
+                .statusCode(200)
+                .body(containsString("Hello World"));
     }
 
     public static final class Companion { // public is needed for @Before annotation
