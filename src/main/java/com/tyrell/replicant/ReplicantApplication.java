@@ -5,9 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class ReplicantApplication {
-// https://www.baeldung.com/java-record-vs-lombok
-	public static void main(String[] args) {
-		SpringApplication.run(ReplicantApplication.class, args);
-	}
-
+  // https://www.baeldung.com/java-record-vs-lombok
+  public static void main(String[] args) {
+    SpringApplication.run(ReplicantApplication.class, args);
+  }
 }
