@@ -19,7 +19,7 @@ project.ext {
 	jsonVersion = '20180130'
 	cucumberVersion = "7.20.0" // Stable version compatible with Spring Boot 3.5.4 AOT processing
 	junit5Version = "5.7.2"
-	restAssuredVersion = "2.9.0"
+	restAssuredVersion = "5.5.0"
 	swaggerVersion = "3.0.0"
 	assertjVersion = "3.20.2"
 	checkStyleToolVersion = "8.41"
