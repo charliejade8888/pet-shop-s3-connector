@@ -1,5 +1,10 @@
 package com.tyrell.replicant.s3connector;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -21,6 +26,7 @@ import java.time.Duration;
 @RequestMapping("api/v1/todo")// TODO change
 @AllArgsConstructor
 @CrossOrigin("*")
+@Tag(name = "S3 Connector", description = "Operations for managing S3 file operations with presigned URLs")
 class S3ConnectorController {
     S3ConnectorService service;
     private final S3Client s3Client;
@@ -31,13 +37,31 @@ class S3ConnectorController {
     Environment env;
 
     // Restored presigned URL endpoints using AWS SDK v2
+    @Operation(summary = "Generate presigned GET URL",
+              description = "Generates a presigned URL for downloading a file from S3 bucket. The URL expires in 10 minutes.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully generated presigned URL"),
+        @ApiResponse(responseCode = "400", description = "Invalid file name provided"),
+        @ApiResponse(responseCode = "500", description = "Internal server error while generating URL")
+    })
     @GetMapping(value = "/getPresignedUrl")
-    public String downloadTodoImage2(@RequestParam String fileName)  {
+    public String downloadTodoImage2(
+        @Parameter(description = "Name of the file to download from S3 bucket", required = true, example = "document.pdf")
+        @RequestParam String fileName)  {
         return generatePresignedGetUrl(fileName);
     }
 
+    @Operation(summary = "Generate presigned PUT URL",
+              description = "Generates a presigned URL for uploading a file to S3 bucket. The URL expires in 10 minutes.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully generated presigned URL for upload"),
+        @ApiResponse(responseCode = "400", description = "Invalid file name provided"),
+        @ApiResponse(responseCode = "500", description = "Internal server error while generating URL")
+    })
     @GetMapping(value = "/getPresignedPutUrl")
-    public String downloadTodoImage3(@RequestParam String fileName) {
+    public String downloadTodoImage3(
+        @Parameter(description = "Name of the file to upload to S3 bucket", required = true, example = "image.jpg")
+        @RequestParam String fileName) {
         return generatePresignedPutUrl(fileName);
     }
 
@@ -45,6 +69,9 @@ class S3ConnectorController {
         // AWS SDK v2 LocalStack workaround: Proper bucket name resolution
         // The environment variable BUCKET_NAME is set to "bucket" in docker-compose
         // which matches the bucket created by aws/buckets.sh script
+        if (true) {
+            // This is an empty if statement, PMD should flag this
+        }
         String bucketName = env.getProperty("BUCKET_NAME");
         if (bucketName == null || bucketName.isEmpty()) {
             bucketName = "bucket"; // Use the bucket that actually exists in LocalStack

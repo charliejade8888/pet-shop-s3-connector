@@ -5,7 +5,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'org.graalvm.buildtools.native' version '0.9.28'
-	id "com.github.spotbugs" version "5.2.5"
+	id "com.github.spotbugs" version "6.0.26"
 	id "checkstyle"
 	id "jacoco"
 	id "pmd"
@@ -20,7 +20,7 @@ project.ext {
 	cucumberVersion = "7.20.0" // Stable version compatible with Spring Boot 3.5.4 AOT processing
 	junit5Version = "5.11.3"
 	restAssuredVersion = "5.5.0"
-	swaggerVersion = "3.0.0"
+	swaggerVersion = "2.7.0" // Updated to latest SpringDoc OpenAPI version
 	assertjVersion = "3.26.3"
 	checkStyleToolVersion = "9.3"
 	jacocoToolVersion = "0.8.13"
@@ -63,6 +63,10 @@ dependencies {
 	implementation 'software.amazon.awssdk:auth:2.21.29'
 
 	implementation "org.json:json:${jsonVersion}"
+
+	// SpringDoc OpenAPI (Swagger) for API documentation
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${swaggerVersion}"
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
