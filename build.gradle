@@ -16,14 +16,14 @@ version = '0.0.1-SNAPSHOT'
 
 project.ext {
 	//	swaggerVersion = '2.0.2'
-	jsonVersion = '20180130'
+	jsonVersion = '20240303' // update to latest stable version
 	cucumberVersion = "7.20.0" // Stable version compatible with Spring Boot 3.5.4 AOT processing
 	junit5Version = "5.11.3"
 	restAssuredVersion = "5.5.0"
 	swaggerVersion = "3.0.0"
 	assertjVersion = "3.26.3"
 	checkStyleToolVersion = "9.3"
-	jacocoToolVersion = "0.8.11"
+	jacocoToolVersion = "0.8.13"
 }
 
 java {
@@ -62,7 +62,7 @@ dependencies {
 	implementation 'software.amazon.awssdk:s3:2.21.29'
 	implementation 'software.amazon.awssdk:auth:2.21.29'
 
-	implementation 'org.json:json:20220924'
+	implementation "org.json:json:${jsonVersion}"
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
