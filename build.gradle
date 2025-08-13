@@ -24,6 +24,7 @@ project.ext {
 	assertjVersion = "3.26.3"
 	checkStyleToolVersion = "9.3"
 	jacocoToolVersion = "0.8.13"
+	pmdToolVersion = "7.0.0" // Full Java 21 support
 }
 
 java {
@@ -167,10 +168,8 @@ jacocoTestCoverageVerification {
 
 pmd {
 	consoleOutput = true
-	ignoreFailures = true //set to false for a fail
-//	toolVersion = pmdToolVersion
-	rulesMinimumPriority = 5
-	maxFailures = 0
+	ignoreFailures = false
+	toolVersion = pmdToolVersion
 	ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
 	sourceSets = [sourceSets.main]
 }
