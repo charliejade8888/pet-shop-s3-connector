@@ -26,7 +26,14 @@ import java.time.Duration;
 @RequestMapping("api/v1/todo")// TODO change
 @AllArgsConstructor
 @CrossOrigin("*")
-@Tag(name = "S3 Connector", description = "Operations for managing S3 file operations with presigned URLs")
+@Tag(name = "S3 Connector", description = """
+    Operations for managing S3 file operations with presigned URLs.
+    
+    **Configuration:**
+    - Bucket name is configured via BUCKET_NAME environment variable
+    - If not set, defaults to 'bucket' for LocalStack compatibility
+    - SERVICE_ENDPOINT environment variable configures the S3 service endpoint
+    """)
 class S3ConnectorController {
     S3ConnectorService service;
     private final S3Client s3Client;
@@ -37,8 +44,20 @@ class S3ConnectorController {
     Environment env;
 
     // Restored presigned URL endpoints using AWS SDK v2
-    @Operation(summary = "Generate presigned GET URL",
-              description = "Generates a presigned URL for downloading a file from S3 bucket. The URL expires in 10 minutes.")
+    @Operation(summary = "Generate presigned GET URL for file download",
+              description = """
+                  Generates a presigned URL for downloading a file from S3 bucket. The URL expires in 10 minutes.
+                  
+                  **Usage Instructions:**
+                  1. Call this endpoint with fileName parameter (e.g., ?fileName=myfile.pdf)
+                  2. Copy the returned presigned URL
+                  3. Use the URL directly in your browser or make a GET request to download the file
+                  
+                  **Example:**
+                  - Request: GET /api/v1/todo/getPresignedUrl?fileName=document.pdf
+                  - Response: http://localhost:4566/bucket/document.pdf?X-Amz-Algorithm=...
+                  - Usage: Open the returned URL in browser or use as GET request to download
+                  """)
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully generated presigned URL"),
         @ApiResponse(responseCode = "400", description = "Invalid file name provided"),
@@ -51,8 +70,27 @@ class S3ConnectorController {
         return generatePresignedGetUrl(fileName);
     }
 
-    @Operation(summary = "Generate presigned PUT URL",
-              description = "Generates a presigned URL for uploading a file to S3 bucket. The URL expires in 10 minutes.")
+    @Operation(summary = "Generate presigned PUT URL for file upload",
+              description = """
+                  Generates a presigned URL for uploading a file to S3 bucket. The URL expires in 10 minutes.
+                  
+                  **Usage Instructions:**
+                  1. Call this endpoint with fileName parameter (e.g., ?fileName=myfile.jpg)
+                  2. Copy the returned presigned URL
+                  3. Make a PUT request to the presigned URL with the file as binary body
+                  
+                  **Example using curl:**
+                  - Request: GET /api/v1/todo/getPresignedPutUrl?fileName=image.jpg
+                  - Response: http://localhost:4566/bucket/image.jpg?X-Amz-Algorithm=...
+                  - Upload: curl -X PUT -T /path/to/image.jpg --data-binary @/path/to/image.jpg "returned_presigned_url"
+                  - Or simply: curl -X PUT -T /path/to/image.jpg "returned_presigned_url"
+                  
+                  **Example using Postman:**
+                  1. Get presigned URL from this endpoint
+                  2. Create new PUT request with the returned URL
+                  3. Go to Body tab, select 'binary' type
+                  4. Select file to upload and send request
+                  """)
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully generated presigned URL for upload"),
         @ApiResponse(responseCode = "400", description = "Invalid file name provided"),
