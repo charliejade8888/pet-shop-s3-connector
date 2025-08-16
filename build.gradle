@@ -9,6 +9,7 @@ plugins {
 	id "checkstyle"
 	id "jacoco"
 	id "pmd"
+	id "com.github.ben-manes.versions" version "0.51.0"
 }
 
 group = 'com.tyrell'
@@ -181,29 +182,30 @@ spotbugs {
 }
 
 spotbugsMain {
-	reports(({
+	reports {
 		html {
 			enabled = true
-			destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+			outputLocation = layout.buildDirectory.file("reports/spotbugs/main/spotbugs.html")
 			stylesheet = "fancy-hist.xsl"
 		}
 		xml {
-			enabled = false
+			enabled = true
+			outputLocation = layout.buildDirectory.file("reports/spotbugs/main/spotbugs.xml")
 		}
-	} as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>))
+	}
 }
 
 spotbugsTest {
-	reports(({
+	reports {
 		html {
 			enabled = true
-			destination = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+			outputLocation = layout.buildDirectory.file("reports/spotbugs/test/spotbugs.html")
 			stylesheet = "fancy-hist.xsl"
 		}
 		xml {
 			enabled = false
 		}
-	} as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>))
+	}
 }
 
 tasks.withType(Test) {
