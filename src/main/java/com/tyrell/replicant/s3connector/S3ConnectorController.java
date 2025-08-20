@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import java.time.Duration;
 
 @RestController
-@RequestMapping("api/v1/todo")// TODO change
+@RequestMapping("api/v1/storage")// TODO change
 @AllArgsConstructor
 @CrossOrigin("*")
 @Tag(name = "S3 Connector", description = """
@@ -54,7 +54,7 @@ class S3ConnectorController {
                   3. Use the URL directly in your browser or make a GET request to download the file
                   
                   **Example:**
-                  - Request: GET /api/v1/todo/getPresignedUrl?fileName=document.pdf
+                  - Request: GET /api/v1/storage/getPresignedUrl?fileName=document.pdf
                   - Response: http://localhost:4566/bucket/document.pdf?X-Amz-Algorithm=...
                   - Usage: Open the returned URL in browser or use as GET request to download
                   """)
@@ -80,7 +80,7 @@ class S3ConnectorController {
                   3. Make a PUT request to the presigned URL with the file as binary body
                   
                   **Example using curl:**
-                  - Request: GET /api/v1/todo/getPresignedPutUrl?fileName=image.jpg
+                  - Request: GET /api/v1/storage/getPresignedPutUrl?fileName=image.jpg
                   - Response: http://localhost:4566/bucket/image.jpg?X-Amz-Algorithm=...
                   - Upload: curl -X PUT -T /path/to/image.jpg --data-binary @/path/to/image.jpg "returned_presigned_url"
                   - Or simply: curl -X PUT -T /path/to/image.jpg "returned_presigned_url"

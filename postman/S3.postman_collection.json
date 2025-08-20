@@ -13,7 +13,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "127.0.0.1:8080/api/v1/todo/getPresignedPutUrl",
+					"raw": "127.0.0.1:8080/api/v1/storage/getPresignedPutUrl",
 					"host": [
 						"127",
 						"0",
@@ -37,7 +37,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "127.0.0.1:8080/api/v1/todo/getPresignedUrl",
+					"raw": "127.0.0.1:8080/api/v1/storage/getPresignedUrl",
 					"host": [
 						"127",
 						"0",

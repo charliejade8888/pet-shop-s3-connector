@@ -59,8 +59,8 @@ public class StepDefinitions {
     @Given("I need a pre-signed link to {string} a file {string} using bucket {string}")
     public void i_need_a_pre_signed_link_to_a_file_using_bucket(String action, String fileName, String bucketName) {
         preSignedLinkPath = action.equals("upload")
-                ? "http://127.0.0.1:8080/api/v1/todo/getPresignedPutUrl"  // Use existing PUT presigned URL endpoint
-                : "http://127.0.0.1:8080/api/v1/todo/getPresignedUrl";   // Use existing GET presigned URL endpoint
+                ? "http://127.0.0.1:8080/api/v1/storage/getPresignedPutUrl"  // Use existing PUT presigned URL endpoint
+                : "http://127.0.0.1:8080/api/v1/storage/getPresignedUrl";   // Use existing GET presigned URL endpoint
         request = RestAssured
                 .given()
                 .queryParam("fileName", fileName);
